@@ -1,0 +1,211 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Football Manager - Simulador</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #1a1a1a;
+            color: #fff;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .placar-container {
+            background-color: #2c3e50;
+            padding: 20px 40px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+            gap: 30px;
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+        .tempo {
+            color: #f1c40f;
+            background: #000;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-family: monospace;
+        }
+        #narracao {
+            width: 100%;
+            max-width: 600px;
+            height: 300px;
+            background-color: #111;
+            border: 2px solid #333;
+            border-radius: 5px;
+            padding: 15px;
+            overflow-y: auto;
+            font-family: monospace;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+        .btn-jogar {
+            background-color: #27ae60;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            font-size: 18px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.2s;
+        }
+        .btn-jogar:hover { background-color: #219653; }
+        .gol { color: #2ecc71; font-weight: bold; }
+        .perigo { color: #e74c3c; }
+    </style>
+</head>
+<body>
+
+    <img src="https://www.meioemensagem.com.br/wp-content/uploads/2023/05/fifa-thumb.jpg" alt="Copa do Mundo 2026" style="max-width: 600px; width: 100%; height: auto; border-radius: 8px; margin-bottom: 20px;">
+    
+
+    <div class="placar-container">
+        <span id="nome-casa">Time Casa</span>
+        <span id="gols-casa">0</span>
+        <span class="tempo" id="relogio">00'</span>
+        <span id="gols-fora">0</span>
+        <span id="nome-fora">Time Fora</span>
+    </div>
+
+    <button class="btn-jogar" id="btn-iniciar" onclick="iniciarPartida()">Iniciar Partida</button>
+
+    <h3>Narração dos Lances:</h3>
+    <div id="narracao"></div>
+
+    <script>
+        // Configuração dos Times (Força de 1 a 100)
+        const timeCasa = { nome: "🇧🇷 Brasil", ataque: 1, defesa: 1, gols: 0 };
+        const timeFora = { nome: "🇯🇵 Japão", ataque: 1, defesa: 1, gols: 0 };
+
+        // Frases para dinamizar a narração
+        const frasesAtaque = [
+            "avança em velocidade pelo meio!",
+            "trabalha a bola na entrada da área.",
+            "tenta o cruzamento na área!",
+            "arrisca o chute de longa distância!"
+        ];
+
+        const frasesDefesa = [
+            "mas a zaga afasta o perigo.",
+            "e o goleiro faz uma defesa segura.",
+            "mas o chute vai direto para fora!",
+            "mas a bola explode na marcação."
+        ];
+
+        let minuto = 0;
+        let intervalo;
+
+        // Inicializa os nomes na tela
+        document.getElementById('nome-casa').innerText = timeCasa.nome;
+        document.getElementById('nome-fora').innerText = timeFora.nome;
+
+        function iniciarPartida() {
+    // Se o minuto for 0, significa que é um jogo novo, então fazemos o reset total
+    if (minuto === 0 || minuto > 90) {
+        minuto = 0;
+        timeCasa.gols = 0;
+        timeFora.gols = 0;
+        document.getElementById('gols-casa').innerText = 0;
+        document.getElementById('gols-fora').innerText = 0;
+        document.getElementById('narracao').innerHTML = "<b>Apita o árbitro! Bola rolando!</b><br>";
+    } else {
+        // Se o minuto for 45, o jogo apenas continua
+        document.getElementById('narracao').innerHTML = "<b>Começa o segundo tempo! Bola em jogo!</b><br>" + document.getElementById('narracao').innerHTML;
+    }
+
+    document.getElementById('btn-iniciar').disabled = true;
+
+    // Loop que roda a cada 1000ms (1 segundo)
+    intervalo = setInterval(processarMinuto, 1000);
+}
+
+        function processarMinuto() {
+    minuto++;
+    
+    // 1. Verifica se chegou ao intervalo (45 minutos)
+    if (minuto === 45) {
+        clearInterval(intervalo); // Pausa o jogo
+        
+        const painel = document.getElementById('narracao');
+        painel.innerHTML = "<br><b>☕ Fim do primeiro tempo! Intervalo de jogo.</b><br>" + painel.innerHTML;
+
+        //painel.scrollTop = painel.scrollHeight;
+        
+        // Atualiza o botão para o utilizador clicar quando quiser voltar
+        const btn = document.getElementById('btn-iniciar');
+        btn.innerText = "Iniciar 2º Tempo";
+        btn.disabled = false;
+        
+        // Atualiza o relógio para mostrar 45'
+        document.getElementById('relogio').innerText = minuto + "'";
+        return; // Para a execução deste minuto
+    }
+
+    // 2. Verifica se o jogo realmente acabou (90 minutos)
+    if (minuto > 90) {
+        encerrarPartida();
+        return;
+    }
+
+    // Atualiza o relógio na tela nos restantes minutos
+    document.getElementById('relogio').innerText = minuto + "'";
+
+    // Define se haverá um lance de perigo neste minuto (ex: 15% de chance)
+    if (Math.random() < 0.15) {
+        simularLance();
+    }
+}
+
+
+        function simularLance() {
+            const painel = document.getElementById('narracao');
+            
+            // Define quem está atacando com base no equilíbrio de forças (Ataque vs Defesa adversária)
+            const chanceCasa = timeCasa.ataque / (timeCasa.ataque + timeFora.defesa);
+            const atacante = (Math.random() < chanceCasa) ? timeCasa : timeFora;
+            const defensor = (atacante === timeCasa) ? timeFora : timeCasa;
+
+            let textoLance = `<b>${minuto}'</b> - O ${atacante.nome} ${frasesAtaque[Math.floor(Math.random() * frasesAtaque.length)]} `;
+
+            // Define se o ataque resulta em gol (ex: 25% de chance de o ataque superar a zaga)
+            if (Math.random() < 0.25) {
+                atacante.gols++;
+                textoLance += `<span class='gol'>GOOOOAL! É do ${atacante.nome}! Que golaço! ⚽</span>`;
+                
+                // Atualiza o placar
+                document.getElementById('gols-casa').innerText = timeCasa.gols;
+                document.getElementById('gols-fora').innerText = timeFora.gols;
+            } else {
+                textoLance += `<span class='perigo'>${frasesDefesa[Math.floor(Math.random() * frasesDefesa.length)]}</span>`;
+            }
+
+            //painel.innerHTML += textoLance + "<br>";
+            // Como deve ficar agora:
+painel.innerHTML = textoLance + "<br>" + painel.innerHTML;
+
+           // painel.scrollTop = painel.scrollHeight; // Auto-scroll para o final
+        }
+
+
+function encerrarPartida() {
+    clearInterval(intervalo);
+    const painel = document.getElementById('narracao');
+    painel.innerHTML = "<b>🏁 Fim de jogo! Árbitro encerra a partida.</b><br><br>" + painel.innerHTML;
+
+    
+    const btn = document.getElementById('btn-iniciar');
+    btn.innerText = "Iniciar Partida"; // Reseta o texto para o próximo jogo
+    btn.disabled = false;
+}
+    </script>
+</body>
+</html>
