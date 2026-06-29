@@ -3,6 +3,15 @@
 <html lang="pt-BR">
 <head>
     <link rel="manifest" href="manifest.json">
+
+<script>
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('sw.js')
+      .then(() => console.log('PWA Pronto para uso offline!'))
+      .catch((err) => console.log('Erro no PWA:', err));
+  }
+</script>
+    
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Football Manager - Simulador</title>
