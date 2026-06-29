@@ -51,16 +51,6 @@
     margin-bottom: 2px;
 }
 
-/* Cor para as linhas ÍMPARES (1ª, 3ª, 5ª...) */
-#narracao .lance-linha:nth-child(odd) {
-    background-color: #161616; /* Um preto um pouco mais claro */
-}
-
-/* Cor para as linhas PARES (2ª, 4ª, 6ª...) */
-#narracao .lance-linha:nth-child(even) {
-    background-color: #222222; /* Um cinza escuro */
-}
-        
         #narracao {
             width: 100%;
             max-width: 600px;
@@ -73,6 +63,17 @@
             font-family: monospace;
             font-size: 14px;
             line-height: 1.6;
+
+            /* Cor para as linhas ÍMPARES (1ª, 3ª, 5ª...) */
+#narracao .lance-linha:nth-child(odd) {
+    background-color: #161616; /* Um preto um pouco mais claro */
+}
+
+/* Cor para as linhas PARES (2ª, 4ª, 6ª...) */
+#narracao .lance-linha:nth-child(even) {
+    background-color: #222222; /* Um cinza escuro */
+}
+        
         }
         .btn-jogar {
             background-color: #27ae60;
@@ -164,6 +165,8 @@
         
         const painel = document.getElementById('narracao');
         painel.innerHTML = "<br><b>☕ Fim do primeiro tempo! Intervalo de jogo.</b><br>" + painel.innerHTML;
+// Procure por esta linha e substitua:
+painel.innerHTML = `<div class="lance-linha">${textoLance}</div>` + painel.innerHTML;
 
         //painel.scrollTop = painel.scrollHeight;
         
