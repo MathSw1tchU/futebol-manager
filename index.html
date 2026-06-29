@@ -44,6 +44,23 @@
             border-radius: 5px;
             font-family: monospace;
         }
+        /* Estilo geral para cada linha de lance */
+.lance-linha {
+    padding: 8px 10px;
+    border-radius: 4px;
+    margin-bottom: 2px;
+}
+
+/* Cor para as linhas ÍMPARES (1ª, 3ª, 5ª...) */
+#narracao .lance-linha:nth-child(odd) {
+    background-color: #161616; /* Um preto um pouco mais claro */
+}
+
+/* Cor para as linhas PARES (2ª, 4ª, 6ª...) */
+#narracao .lance-linha:nth-child(even) {
+    background-color: #222222; /* Um cinza escuro */
+}
+        
         #narracao {
             width: 100%;
             max-width: 600px;
